@@ -6,8 +6,9 @@ Shows list of material icons
 
 - [x] Display list of icons
 - [x] Filter by icon types
-- [ ] Search Icon Names
+- [x] Search Icon Names
 - [ ] Fuzzy search
-- [ ] Performance fixes
+- [x] Performance fixes
 - [ ] Deploy to github pages
 - [ ] Auto update with latest material ui icons
+- [x] Add zustand for state

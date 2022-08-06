@@ -8,42 +8,43 @@ import {
   RadioGroup,
   Stack,
   Typography,
+  styled,
 } from "@mui/material";
 import * as icons from "@mui/icons-material";
 import { Icon } from "Icon";
 import { IconTypes } from "types";
-import { ChangeEvent, useState, useEffect, useMemo } from "react";
+import { ChangeEvent, useState, useEffect, useMemo, forwardRef } from "react";
 import { Virtuoso, VirtuosoGrid } from "react-virtuoso";
-import styled from "@emotion/styled";
+import emoStyled from "@emotion/styled";
+import { GroupFilter } from "GroupFilter";
+import { useIconStore } from "store/useStore";
 
 type IconAndGroup = {
   name: string;
   group: string;
 }[];
 
-const ItemContainer = styled.div`
-  display: flex;
-`;
+const ItemContainer = styled(Box)(() => ({
+  display: "flex",
+}));
 
-const ItemWrapper = styled.div`
-  flex: 1;
-  height: 100px;
-  width: 100px;
-`;
+const ItemWrapper = styled(Box)(() => ({
+  flex: 1,
+  height: 100,
+  width: 100,
+}));
 
-const ListContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-`;
+const ListContainer = styled(Box)(() => ({
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "center",
+}));
+console.log(icons.Abc);
 
 export const Icons = () => {
   const [filled, setFilled] = useState<IconAndGroup>([]);
-  const [group, setGroup] = useState("Filled");
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setGroup((event.target as HTMLInputElement).value);
-  };
+  const group = useIconStore((state) => state.group);
+  const search = useIconStore((state) => state.search);
 
   const getAndGroupIcons = () => {
     return (
@@ -70,69 +71,55 @@ export const Icons = () => {
     setFilled(getAndGroupIcons());
   }, []);
 
-  const getIconList = (group: string) => {
-    return filled
-      .slice(0, 50000000000)
-      .filter((icon) => icon.group == group)
-      .map((icon) => {
-        return icon.name;
-      });
+  const getIconList = (group: string, search: string) => {
+    return (
+      filled
+        // .slice(0, 500)
+        .filter((icon) =>
+          search.length > 0
+            ? icon.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+            : true
+        )
+        .filter((icon) => icon.group == group)
+        .map((icon) => {
+          return icon.name;
+        })
+    );
   };
 
   // const iconList = getIconList();
-  const iconList = useMemo(() => getIconList(group), [group, filled]);
+  const iconList = useMemo(
+    () => getIconList(group, search),
+    [group, search, filled]
+  );
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-      <FormControl>
-        <RadioGroup row name="icon-types" value={group} onChange={handleChange}>
-          <FormControlLabel value="Filled" control={<Radio />} label="Filled" />
-          <FormControlLabel
-            value="Outlined"
-            control={<Radio />}
-            label="Outlined"
-          />
-          <FormControlLabel
-            value="Rounded"
-            control={<Radio />}
-            label="Rounded"
-          />
-          <FormControlLabel
-            value="TwoTone"
-            control={<Radio />}
-            label="TwoTone"
-          />
-          <FormControlLabel value="Sharp" control={<Radio />} label="Sharp" />
-        </RadioGroup>
-      </FormControl>
-
-      {/* <Grid container spacing={2} justifyContent="center" alignItems="center">
-        {iconList}
-      </Grid> */}
+      <GroupFilter />
 
       <VirtuosoGrid
         style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
         totalCount={iconList.length}
         overscan={200}
         components={{
+          List: forwardRef(({ style, children }, listRef) => {
+            return (
+              <ListContainer
+                style={{ padding: 0, ...style, margin: 0 }}
+                component="div"
+                ref={listRef}
+              >
+                {children}
+              </ListContainer>
+            );
+          }),
           Item: ItemContainer,
-          List: ListContainer,
-          // ScrollSeekPlaceholder: ({ height, width, index }) => (
-          //   <ItemContainer>
-          //     <ItemWrapper>{"--"}</ItemWrapper>
-          //   </ItemContainer>
-          // ),
         }}
         itemContent={(index) => (
           <ItemWrapper>
             <Icon icon={iconList[index] as IconTypes} />
           </ItemWrapper>
         )}
-        // scrollSeekConfiguration={{
-        //   enter: (velocity) => Math.abs(velocity) > 200,
-        //   exit: (velocity) => Math.abs(velocity) < 30,
-        //   change: (_, range) => console.log({ range }),
-        // }}
       />
     </Box>
   );

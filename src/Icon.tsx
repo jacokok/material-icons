@@ -29,6 +29,7 @@ export const Icon = ({ icon }: Props) => {
         variant="body2"
         sx={{
           fontSize: 10,
+          p: 0.5,
           textAlign: "center",
           overflow: "hidden",
           textOverflow: "ellipsis",
