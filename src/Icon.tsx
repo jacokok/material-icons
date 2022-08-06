@@ -9,19 +9,22 @@ interface Props {
 export const Icon = ({ icon }: Props) => {
   const Icon = icons[icon];
   return (
-    <Grid
-      item
-      sx={{
-        width: 100,
-        height: 100,
+    <div
+      style={{
         display: "flex",
         flexDirection: "column",
-        justifyItems: "center",
+        justifyContent: "center",
+        width: 100,
+        height: 100,
       }}
     >
-      <Button>
-        <Icon sx={{ fontSize: 40 }} />
-      </Button>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Button
+          sx={{ display: "flex", height: 80, width: 80, textAlign: "center" }}
+        >
+          <Icon sx={{ fontSize: 40 }} />
+        </Button>
+      </Box>
       <Typography
         variant="body2"
         sx={{
@@ -33,6 +36,6 @@ export const Icon = ({ icon }: Props) => {
       >
         {icon}
       </Typography>
-    </Grid>
+    </div>
   );
 };
